@@ -1,0 +1,35 @@
+[package]
+name = "quiplash"
+version = "0.1.0"
+authors = ["Jens Reidel <adrian@travitia.xyz>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+env_logger = { version = "0.8", default-features = false, features = [
+    "termcolor",
+    "atty",
+    "humantime"
+] }
+hyper = { version = "0.14", default-features = false, features = [
+    "server",
+    "tcp",
+    "http2"
+] }
+lazy_static = "1.4"
+log = "0.4"
+rand = { version = "0.8", default-features = false, features = ["getrandom"] }
+rand_chacha = "0.3"
+tokio = { version = "1.0", default-features = false, features = [
+    "rt-multi-thread",
+    "macros"
+] }
+qstring = "0.7"
+
+[profile.release]
+codegen-units = 1
+debug = false
+incremental = false
+lto = true
+opt-level = 3
+panic = "abort"
