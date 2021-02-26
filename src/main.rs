@@ -12,12 +12,18 @@ use std::{
     time::Instant,
 };
 
-const PG: &'static str = include_str!("../data/pg.txt");
-const NON_PG: &'static str = include_str!("../data/non-pg.txt");
+const PG: &str = include_str!("../data/pg.txt");
+const NON_PG: &str = include_str!("../data/non-pg.txt");
+const AO: &str = include_str!("../data/ao.txt");
 
 lazy_static::lazy_static! {
+    static ref AO_PROMPTS: Vec<&'static str> = {
+        AO.lines().collect()
+    };
     static ref PG_PROMPTS: Vec<&'static str> = {
-        PG.lines().collect()
+        let mut lines: Vec<_> = PG.lines().collect();
+        lines.extend_from_slice(&AO_PROMPTS);
+        lines
     };
     static ref NON_PG_PROMPTS: Vec<&'static str> = {
         let mut lines: Vec<_> = NON_PG.lines().collect();
@@ -110,7 +116,7 @@ async fn main() {
     let addr = ([0, 0, 0, 0], port).into();
 
     let make_service = make_service_fn(move |_| async move {
-        Ok::<_, hyper::Error>(service_fn(move |req| request_handler(req)))
+        Ok::<_, hyper::Error>(service_fn(request_handler))
     });
 
     let server = Server::bind(&addr).serve(make_service);
